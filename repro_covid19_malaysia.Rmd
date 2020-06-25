@@ -20,4 +20,27 @@ To model the time-dependent reproduction number of COVID-19 for Malaysia
 - Reproduce methods proposed in EpiEstim package
 - Reference  https://cran.r-project.org/web/packages/EpiEstim/vignettes/demo.html
 
-# 
+# Prepare environment
+
+```{r}
+library(tidyverse)
+```
+
+
+# Get data
+
+## From github
+
+```{r}
+library(coronavirus)
+data(coronavirus)
+update_dataset(coronavirus)
+```
+
+Malaysia data
+
+```{r}
+mys <- coronavirus
+update()
+```
+
