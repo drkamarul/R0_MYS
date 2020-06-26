@@ -24,6 +24,7 @@ To model the time-dependent reproduction number of COVID-19 for Malaysia
 
 ```{r}
 library(tidyverse)
+library(EpiEstim)
 ```
 
 
@@ -32,15 +33,75 @@ library(tidyverse)
 ## From github
 
 ```{r}
-library(coronavirus)
-data(coronavirus)
-update_dataset(coronavirus)
+covid <- read_csv('https://raw.githubusercontent.com/RamiKrispin/coronavirus/master/csv/coronavirus.csv')
 ```
 
-Malaysia data
+## Malaysia data
 
 ```{r}
-mys <- coronavirus
-update()
+mys <- covid %>% 
+  select(date, country, type , cases) %>% 
+  filter(country == 'Malaysia', type == 'confirmed') %>%
+  rename(Time = date, I = cases) %>% data.frame()
+```
+
+
+# Calculate R
+
+Setting the mean_si = 7.5 and std_si = 3.4. What would be the mean_si and std_si?
+
+The problem is R is estimated too early.
+
+What would be the earliest time to start and time to end?
+
+t_start = need to adjust
+t_end = need to adjust
+
+```{r}
+mys_parametric_si <- estimate_R(mys, 
+                                method = "parametric_si",
+                                config = make_config(list(mean_si = 7.5, 
+                                                          std_si = 3.4)))
+glimpse(mys_parametric_si)
+```
+# Plot
+
+- plots the incidence
+- plots the serial interval distribution
+
+```{r}
+p_I <- plot(mys_parametric_si, "incid") 
+p_I + theme_bw()
+p_SI <- plot(mys_parametric_si, "SI")  
+p_SI + theme_bw()
+p_Ri <- plot(mys_parametric_si, "R")
+p_Ri + theme_bw()
+```
+
+The $R_t$ is very high nearly day 50. Reasons:
+
+- One possible explanation is that COVID-19 is transmissible before the onset of symptoms, resulting in much shorter serial intervals than expected, possibly shorter than the incubation period
+- Alternatively, and very likely, there may be non-symptomatic, sub-clinical spreaders of the disease, who are undetected.
+- some cases transmitting the disease very soon after infection, possibly before the onset of symptoms (so-called super-spreaders), and some cases being sub-clinical, and thus undetected, spreading the disease as well, while other cases have a serial interval more consistent with that of MERS or SARS, with a mean around 8 days.
+
+# Calculate R with uncertainty
+
+incorporate this uncertainty around the serial interval distribution by allowing specification of a distribution of distributions of serial intervals. So let’s 
+
+- retain the mean SI estimated by Li et al of 7.5 days, with an SD of 3.4
+- but let’s also allow that mean SI to vary between 2.3 and 8.4 
+- Use a truncated normal distribution with an SD of 2.0.
+- We’ll also allow the SD or the SD to vary between 0.5 and 4.0.
+
+```{r}
+# mys_res_uncertain_si <- estimate_R(mys, method = "uncertain_si", 
+#                                   config = make_config(list(mean_si = 7.5, std_si = 3.4, 
+#                                                             std_mean_si = 2, 
+#                                                             min_mean_si = 2.3, max_mean_si = 8.4, 
+#                                                             std_std_si = 2, 
+#                                                             min_std_si = 0.5, max_std_si = 4, 
+#                                                             n1 = 1000, n2 = 1000)))
+
+# plot_Ri(mys_res_uncertain_si)
 ```
 
