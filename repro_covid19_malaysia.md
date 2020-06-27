@@ -44,16 +44,26 @@ library(tidyverse)
 
 ```r
 library(EpiEstim)
+library(here)
+```
+
+```
+## here() starts at D:/R0_MYS
 ```
 
 
 # Get data
 
-## From github
+## From github, save and read again
+
+and save locally as covid
+and read
 
 
 ```r
-covid <- read_csv('https://raw.githubusercontent.com/RamiKrispin/coronavirus/master/csv/coronavirus.csv')
+# covid <- read_csv('https://raw.githubusercontent.com/RamiKrispin/coronavirus/master/csv/coronavirus.csv')
+# write_csv(covid, 'covid.csv')
+covid <- read_csv('covid.csv')
 ```
 
 ```
@@ -67,18 +77,6 @@ covid <- read_csv('https://raw.githubusercontent.com/RamiKrispin/coronavirus/mas
 ##   type = col_character(),
 ##   cases = col_double()
 ## )
-```
-
-```
-## Warning: 35724 parsing failures.
-##   row      col           expected  actual                                                                                   file
-## 28861 province 1/0/T/F/TRUE/FALSE Alberta 'https://raw.githubusercontent.com/RamiKrispin/coronavirus/master/csv/coronavirus.csv'
-## 28862 province 1/0/T/F/TRUE/FALSE Alberta 'https://raw.githubusercontent.com/RamiKrispin/coronavirus/master/csv/coronavirus.csv'
-## 28863 province 1/0/T/F/TRUE/FALSE Alberta 'https://raw.githubusercontent.com/RamiKrispin/coronavirus/master/csv/coronavirus.csv'
-## 28864 province 1/0/T/F/TRUE/FALSE Alberta 'https://raw.githubusercontent.com/RamiKrispin/coronavirus/master/csv/coronavirus.csv'
-## 28865 province 1/0/T/F/TRUE/FALSE Alberta 'https://raw.githubusercontent.com/RamiKrispin/coronavirus/master/csv/coronavirus.csv'
-## ..... ........ .................. ....... ......................................................................................
-## See problems(...) for more details.
 ```
 
 ## Malaysia data
@@ -155,6 +153,7 @@ glimpse(mys_parametric_si)
 
 - plots the incidence
 - plots the serial interval distribution
+- plot of R
 
 
 ```r
@@ -164,19 +163,22 @@ p_I + theme_bw()
 
 ![](repro_covid19_malaysia_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
 
+
 ```r
 p_SI <- plot(mys_parametric_si, "SI")  
 p_SI + theme_bw()
 ```
 
-![](repro_covid19_malaysia_files/figure-html/unnamed-chunk-5-2.png)<!-- -->
+![](repro_covid19_malaysia_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
+- the 7-day sliding window estimates of instantaneous $R_e$
+
 
 ```r
 p_Ri <- plot(mys_parametric_si, "R")
 p_Ri + theme_bw()
 ```
 
-![](repro_covid19_malaysia_files/figure-html/unnamed-chunk-5-3.png)<!-- -->
+![](repro_covid19_malaysia_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
 
 The $R_t$ is very high nearly day 50. Reasons:
 
@@ -204,5 +206,58 @@ incorporate this uncertainty around the serial interval distribution by allowing
 #                                                             n1 = 1000, n2 = 1000)))
 
 # plot_Ri(mys_res_uncertain_si)
+```
+
+```r
+sessionInfo()
+```
+
+```
+## R version 4.0.2 (2020-06-22)
+## Platform: x86_64-w64-mingw32/x64 (64-bit)
+## Running under: Windows 10 x64 (build 19041)
+## 
+## Matrix products: default
+## 
+## locale:
+## [1] LC_COLLATE=English_United States.1252 
+## [2] LC_CTYPE=English_United States.1252   
+## [3] LC_MONETARY=English_United States.1252
+## [4] LC_NUMERIC=C                          
+## [5] LC_TIME=English_United States.1252    
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+##  [1] here_0.1        EpiEstim_2.2-3  forcats_0.5.0   stringr_1.4.0  
+##  [5] dplyr_1.0.0     purrr_0.3.4     readr_1.3.1     tidyr_1.1.0    
+##  [9] tibble_3.0.1    ggplot2_3.3.2   tidyverse_1.3.0
+## 
+## loaded via a namespace (and not attached):
+##  [1] Rcpp_1.0.4.6          lubridate_1.7.9       lattice_0.20-41      
+##  [4] rprojroot_1.3-2       assertthat_0.2.1      digest_0.6.25        
+##  [7] R6_2.4.1              cellranger_1.1.0      plyr_1.8.6           
+## [10] MatrixModels_0.4-1    backports_1.1.7       reprex_0.3.0         
+## [13] evaluate_0.14         coda_0.19-3           httr_1.4.1           
+## [16] pillar_1.4.4          rlang_0.4.6           readxl_1.3.1         
+## [19] SparseM_1.78          rstudioapi_0.11       blob_1.2.1           
+## [22] Matrix_1.2-18         rmarkdown_2.3         labeling_0.3         
+## [25] splines_4.0.2         incidence_1.7.1       munsell_0.5.0        
+## [28] broom_0.5.6           compiler_4.0.2        modelr_0.1.8         
+## [31] xfun_0.15             pkgconfig_2.0.3       mcmc_0.9-7           
+## [34] htmltools_0.5.0       tidyselect_1.1.0      gridExtra_2.3        
+## [37] fitdistrplus_1.1-1    fansi_0.4.1           crayon_1.3.4         
+## [40] dbplyr_1.4.4          withr_2.2.0           MASS_7.3-51.6        
+## [43] grid_4.0.2            nlme_3.1-148          jsonlite_1.6.1       
+## [46] gtable_0.3.0          lifecycle_0.2.0       DBI_1.1.0            
+## [49] magrittr_1.5          coarseDataTools_0.6-5 scales_1.1.1         
+## [52] cli_2.0.2             stringi_1.4.6         farver_2.0.3         
+## [55] reshape2_1.4.4        fs_1.4.1              xml2_1.3.2           
+## [58] ellipsis_0.3.1        generics_0.0.2        vctrs_0.3.1          
+## [61] tools_4.0.2           glue_1.4.1            hms_0.5.3            
+## [64] survival_3.2-3        yaml_2.2.1            colorspace_1.4-1     
+## [67] rvest_0.3.5           knitr_1.29            haven_2.3.1          
+## [70] quantreg_5.55         MCMCpack_1.4-8
 ```
 

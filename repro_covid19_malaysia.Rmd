@@ -25,15 +25,21 @@ To model the time-dependent reproduction number of COVID-19 for Malaysia
 ```{r}
 library(tidyverse)
 library(EpiEstim)
+library(here)
 ```
 
 
 # Get data
 
-## From github
+## From github, save and read again
+
+and save locally as covid
+and read
 
 ```{r}
-covid <- read_csv('https://raw.githubusercontent.com/RamiKrispin/coronavirus/master/csv/coronavirus.csv')
+# covid <- read_csv('https://raw.githubusercontent.com/RamiKrispin/coronavirus/master/csv/coronavirus.csv')
+# write_csv(covid, 'covid.csv')
+covid <- read_csv('covid.csv')
 ```
 
 ## Malaysia data
@@ -68,12 +74,20 @@ glimpse(mys_parametric_si)
 
 - plots the incidence
 - plots the serial interval distribution
+- plot of R
 
 ```{r}
 p_I <- plot(mys_parametric_si, "incid") 
 p_I + theme_bw()
+```
+
+```{r}
 p_SI <- plot(mys_parametric_si, "SI")  
 p_SI + theme_bw()
+```
+- the 7-day sliding window estimates of instantaneous $R_e$
+
+```{r}
 p_Ri <- plot(mys_parametric_si, "R")
 p_Ri + theme_bw()
 ```
@@ -103,5 +117,8 @@ incorporate this uncertainty around the serial interval distribution by allowing
 #                                                             n1 = 1000, n2 = 1000)))
 
 # plot_Ri(mys_res_uncertain_si)
+```
+```{r}
+sessionInfo()
 ```
 
