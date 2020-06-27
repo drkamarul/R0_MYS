@@ -26,6 +26,8 @@ To model the time-dependent reproduction number of COVID-19 for Malaysia
 library(tidyverse)
 library(EpiEstim)
 library(here)
+library(janitor)
+library(lubridate)
 ```
 
 
@@ -44,13 +46,31 @@ covid <- read_csv('covid.csv')
 
 ## Malaysia data
 
+Malaysia data from github
+
 ```{r}
 mys <- covid %>% 
   select(date, country, type , cases) %>% 
-  filter(country == 'Malaysia', type == 'confirmed') %>%
+  filter(country == 'Malaysia', type == 'confirmed') %>% clean_names() %>%
   rename(Time = date, I = cases) %>% data.frame()
 ```
 
+Malaysia data from dataworld
+
+```{r}
+library("httr")
+library("readxl")
+GET("https://query.data.world/s/dl2knkmq7y2erjews5hnsc6vjbr3pc", 
+    write_disk(tf <- tempfile(fileext = ".xlsx")))
+mys_dw <- read_excel(tf, sheet = 'd(Base)') %>% clean_names() %>%
+  select(Time = date, mco_phase, cum_pos = positive, I = d_positive) %>%
+  mutate_if(is.POSIXt, as.Date) %>% 
+  filter(Time < '2020-06-07') %>%
+  data.frame()
+mys_dw_state <- read_excel(tf, sheet = 'State') %>% clean_names() %>%
+  select(Time = date, perlis:total, east_malaysia, west_malaysia) %>%
+  mutate_if(is.POSIXt, as.Date) %>% data.frame()
+```
 
 # Calculate R
 
@@ -62,6 +82,8 @@ What would be the earliest time to start and time to end?
 
 t_start = need to adjust
 t_end = need to adjust
+
+For Malaysia data John Hopkins 
 
 ```{r}
 mys_parametric_si <- estimate_R(mys, 
@@ -118,6 +140,45 @@ incorporate this uncertainty around the serial interval distribution by allowing
 
 # plot_Ri(mys_res_uncertain_si)
 ```
+
+
+# Analysis from data world
+
+
+```{r}
+mys_dw <- mys_dw %>% select(Time, I)
+mys_dw_parametric_si <- estimate_R(mys_dw, 
+                                method = "parametric_si",
+                                config = make_config(list(mean_si = 7.5, 
+                                                          std_si = 3.4)))
+glimpse(mys_dw_parametric_si)
+```
+
+# Plot
+
+- plots the incidence
+- plots the serial interval distribution
+- plot of R
+
+```{r}
+p_I_dw <- plot(mys_dw_parametric_si, "incid") 
+p_I_dw + theme_bw()
+```
+
+
+```{r}
+p_SI_dw <- plot(mys_dw_parametric_si, "SI")  
+p_SI_dw + theme_bw()
+```
+
+- the 7-day sliding window estimates of instantaneous $R_e$
+
+```{r}
+p_Ri_dw <- plot(mys_dw_parametric_si, "R")
+p_Ri_dw + theme_bw()
+```
+
+
 ```{r}
 sessionInfo()
 ```
