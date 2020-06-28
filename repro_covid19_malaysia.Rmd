@@ -20,6 +20,11 @@ To model the time-dependent reproduction number of COVID-19 for Malaysia
 - Reproduce methods proposed in EpiEstim package
 - Reference  https://cran.r-project.org/web/packages/EpiEstim/vignettes/demo.html
 
+Data from
+
+- WHO from github
+- Crowd-sourcing data from data world
+
 # Prepare environment
 
 ```{r}
@@ -31,7 +36,7 @@ library(lubridate)
 ```
 
 
-# Get data
+# Data
 
 ## From github, save and read again
 
@@ -74,6 +79,8 @@ mys_dw_state <- read_excel(tf, sheet = 'State') %>% clean_names() %>%
 
 # Calculate R
 
+## Based on Wuhan
+
 Setting the mean_si = 7.5 and std_si = 3.4. What would be the mean_si and std_si?
 
 The problem is R is estimated too early.
@@ -92,7 +99,7 @@ mys_parametric_si <- estimate_R(mys,
                                                           std_si = 3.4)))
 glimpse(mys_parametric_si)
 ```
-# Plot
+### Plot
 
 - plots the incidence
 - plots the serial interval distribution
@@ -120,7 +127,7 @@ The $R_t$ is very high nearly day 50. Reasons:
 - Alternatively, and very likely, there may be non-symptomatic, sub-clinical spreaders of the disease, who are undetected.
 - some cases transmitting the disease very soon after infection, possibly before the onset of symptoms (so-called super-spreaders), and some cases being sub-clinical, and thus undetected, spreading the disease as well, while other cases have a serial interval more consistent with that of MERS or SARS, with a mean around 8 days.
 
-# Calculate R with uncertainty
+### Calculate R with uncertainty
 
 incorporate this uncertainty around the serial interval distribution by allowing specification of a distribution of distributions of serial intervals. So let’s 
 
@@ -142,8 +149,49 @@ incorporate this uncertainty around the serial interval distribution by allowing
 ```
 
 
+## Based on Du, Z., et al.
+
+The serial interval of COVID-19 from publicly reported confirmed cases. medRxiv, 2020
+
+mean = 3.96, SD = 4.75
+
+```{r}
+mys_parametric_si_du <- estimate_R(mys, 
+                                method = "parametric_si",
+                                config = make_config(list(mean_si = 3.96, 
+                                                          std_si = 4.75)))
+glimpse(mys_parametric_si_du)
+```
+### Plot
+
+- plots the incidence
+- plots the serial interval distribution
+- plot of R
+
+```{r}
+p_I_du <- plot(mys_parametric_si_du, "incid") 
+p_I_du + theme_bw()
+```
+
+```{r}
+p_SI_du <- plot(mys_parametric_si_du, "SI")  
+p_SI_du + theme_bw()
+```
+
+- the 7-day sliding window estimates of instantaneous $R_e$
+
+```{r}
+p_Ri_du <- plot(mys_parametric_si_du, "R")
+p_Ri_du + theme_bw()
+```
+
+
+
 # Analysis from data world
 
+## Wuhan SI
+
+mean SI = 7.5, SD SI = 3.4 
 
 ```{r}
 mys_dw <- mys_dw %>% select(Time, I)
@@ -154,7 +202,7 @@ mys_dw_parametric_si <- estimate_R(mys_dw,
 glimpse(mys_dw_parametric_si)
 ```
 
-# Plot
+### Plot
 
 - plots the incidence
 - plots the serial interval distribution
@@ -176,6 +224,46 @@ p_SI_dw + theme_bw()
 ```{r}
 p_Ri_dw <- plot(mys_dw_parametric_si, "R")
 p_Ri_dw + theme_bw()
+```
+
+
+## Based on Du et al
+
+### Du et al SI
+
+mean SI = 7.5, SD SI = 3.4 
+
+```{r}
+mys_dw <- mys_dw %>% select(Time, I)
+mys_dw_parametric_si_du <- estimate_R(mys_dw, 
+                                method = "parametric_si",
+                                config = make_config(list(mean_si = 3.96, 
+                                                          std_si = 4.75)))
+glimpse(mys_dw_parametric_si_du)
+```
+
+### Plot
+
+- plots the incidence
+- plots the serial interval distribution
+- plot of R
+
+```{r}
+p_I_dw_du <- plot(mys_dw_parametric_si_du, "incid") 
+p_I_dw_du + theme_bw()
+```
+
+
+```{r}
+p_SI_dw_du <- plot(mys_dw_parametric_si_du, "SI")  
+p_SI_dw_du + theme_bw()
+```
+
+- the 7-day sliding window estimates of instantaneous $R_e$
+
+```{r}
+p_Ri_dw_du <- plot(mys_dw_parametric_si_du, "R")
+p_Ri_dw_du + theme_bw()
 ```
 
 

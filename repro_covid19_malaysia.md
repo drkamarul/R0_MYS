@@ -18,6 +18,11 @@ To model the time-dependent reproduction number of COVID-19 for Malaysia
 - Reproduce methods proposed in EpiEstim package
 - Reference  https://cran.r-project.org/web/packages/EpiEstim/vignettes/demo.html
 
+Data from
+
+- WHO from github
+- Crowd-sourcing data from data world
+
 # Prepare environment
 
 
@@ -82,7 +87,7 @@ library(lubridate)
 ```
 
 
-# Get data
+# Data
 
 ## From github, save and read again
 
@@ -133,11 +138,11 @@ GET("https://query.data.world/s/dl2knkmq7y2erjews5hnsc6vjbr3pc",
 
 ```
 ## Response [https://download.data.world/file_download/erhanazrai/httpsdocsgooglecomspreadsheetsd15a43eb68lt7ggk9vavy/Covid19-KKM.xlsx?auth=eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJwcm9kLXVzZXItY2xpZW50OmtpbTQ1OTciLCJpc3MiOiJhZ2VudDpraW00NTk3Ojo0Y2JiNWNhZi0yYmQ4LTQxNjAtOTVlYi00NzkzNmIzYmQwNTIiLCJpYXQiOjE1OTMyNjYzNTksInJvbGUiOlsidXNlciIsInVzZXJfYXBpX2FkbWluIiwidXNlcl9hcGlfcmVhZCIsInVzZXJfYXBpX3dyaXRlIl0sImdlbmVyYWwtcHVycG9zZSI6ZmFsc2UsInVybCI6IjNlNjU2OTA0ZDk5Nzk0YzY4NDc2NmE5Y2NkMjg0MmZlOTFmYjU0YjQifQ.yd0caZAlJKAFaMelFfRE-68UjkRNV1Z7uZSj5i7TeCldQZagrXUFjvJHbac7Cbr__2SHUQIe451R7d86BOIyNQ]
-##   Date: 2020-06-27 15:15
+##   Date: 2020-06-28 14:34
 ##   Status: 200
 ##   Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
 ##   Size: 566 kB
-## <ON DISK>  C:\Users\DRKAMA~1\AppData\Local\Temp\RtmpIts8Pd\file441458391368.xlsx
+## <ON DISK>  C:\Users\DRKAMA~1\AppData\Local\Temp\RtmpYdLt5P\file40d856463dce.xlsx
 ```
 
 ```r
@@ -168,6 +173,8 @@ mys_dw_state <- read_excel(tf, sheet = 'State') %>% clean_names() %>%
 ```
 
 # Calculate R
+
+## Based on Wuhan
 
 Setting the mean_si = 7.5 and std_si = 3.4. What would be the mean_si and std_si?
 
@@ -228,7 +235,7 @@ glimpse(mys_parametric_si)
 ##  $ I_imported: num [1:156] 0 0 0 0 0 0 0 0 0 0 ...
 ##  - attr(*, "class")= chr "estimate_R"
 ```
-# Plot
+### Plot
 
 - plots the incidence
 - plots the serial interval distribution
@@ -265,7 +272,7 @@ The $R_t$ is very high nearly day 50. Reasons:
 - Alternatively, and very likely, there may be non-symptomatic, sub-clinical spreaders of the disease, who are undetected.
 - some cases transmitting the disease very soon after infection, possibly before the onset of symptoms (so-called super-spreaders), and some cases being sub-clinical, and thus undetected, spreading the disease as well, while other cases have a serial interval more consistent with that of MERS or SARS, with a mean around 8 days.
 
-# Calculate R with uncertainty
+### Calculate R with uncertainty
 
 incorporate this uncertainty around the serial interval distribution by allowing specification of a distribution of distributions of serial intervals. So let’s 
 
@@ -288,8 +295,99 @@ incorporate this uncertainty around the serial interval distribution by allowing
 ```
 
 
+## Based on Du, Z., et al.
+
+The serial interval of COVID-19 from publicly reported confirmed cases. medRxiv, 2020
+
+mean = 3.96, SD = 4.75
+
+
+```r
+mys_parametric_si_du <- estimate_R(mys, 
+                                method = "parametric_si",
+                                config = make_config(list(mean_si = 3.96, 
+                                                          std_si = 4.75)))
+```
+
+```
+## Default config will estimate R on weekly sliding windows.
+##     To change this change the t_start and t_end arguments.
+```
+
+```
+## Warning in estimate_R_func(incid = incid, method = method, si_sample = si_sample, : You're estimating R too early in the epidemic to get the desired
+##             posterior CV.
+```
+
+```r
+glimpse(mys_parametric_si_du)
+```
+
+```
+## List of 8
+##  $ R         :'data.frame':	149 obs. of  11 variables:
+##   ..$ t_start          : num [1:149] 2 3 4 5 6 7 8 9 10 11 ...
+##   ..$ t_end            : num [1:149] 8 9 10 11 12 13 14 15 16 17 ...
+##   ..$ Mean(R)          : num [1:149] 2.597 2.052 1.629 0.973 0.909 ...
+##   ..$ Std(R)           : num [1:149] 0.918 0.684 0.543 0.397 0.406 ...
+##   ..$ Quantile.0.025(R): num [1:149] 1.121 0.938 0.745 0.357 0.295 ...
+##   ..$ Quantile.0.05(R) : num [1:149] 1.292 1.071 0.85 0.424 0.358 ...
+##   ..$ Quantile.0.25(R) : num [1:149] 1.933 1.559 1.237 0.684 0.612 ...
+##   ..$ Median(R)        : num [1:149] 2.489 1.977 1.569 0.919 0.849 ...
+##   ..$ Quantile.0.75(R) : num [1:149] 3.14 2.46 1.95 1.2 1.14 ...
+##   ..$ Quantile.0.95(R) : num [1:149] 4.27 3.29 2.61 1.7 1.66 ...
+##   ..$ Quantile.0.975(R): num [1:149] 4.68 3.59 2.85 1.89 1.86 ...
+##  $ method    : chr "parametric_si"
+##  $ si_distr  : Named num [1:157] 0 0.361 0.204 0.1032 0.0695 ...
+##   ..- attr(*, "names")= chr [1:157] "t0" "t1" "t2" "t3" ...
+##  $ SI.Moments:'data.frame':	1 obs. of  2 variables:
+##   ..$ Mean: num 3.96
+##   ..$ Std : num 4.76
+##  $ dates     : int [1:156] 1 2 3 4 5 6 7 8 9 10 ...
+##  $ I         : num [1:156] 0 0 0 3 1 0 0 3 1 0 ...
+##  $ I_local   : num [1:156] 0 0 0 3 1 0 0 3 1 0 ...
+##  $ I_imported: num [1:156] 0 0 0 0 0 0 0 0 0 0 ...
+##  - attr(*, "class")= chr "estimate_R"
+```
+### Plot
+
+- plots the incidence
+- plots the serial interval distribution
+- plot of R
+
+
+```r
+p_I_du <- plot(mys_parametric_si_du, "incid") 
+p_I_du + theme_bw()
+```
+
+![](repro_covid19_malaysia_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
+
+
+```r
+p_SI_du <- plot(mys_parametric_si_du, "SI")  
+p_SI_du + theme_bw()
+```
+
+![](repro_covid19_malaysia_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
+
+- the 7-day sliding window estimates of instantaneous $R_e$
+
+
+```r
+p_Ri_du <- plot(mys_parametric_si_du, "R")
+p_Ri_du + theme_bw()
+```
+
+![](repro_covid19_malaysia_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
+
+
+
 # Analysis from data world
 
+## Wuhan SI
+
+mean SI = 7.5, SD SI = 3.4 
 
 
 ```r
@@ -341,7 +439,7 @@ glimpse(mys_dw_parametric_si)
 ##  - attr(*, "class")= chr "estimate_R"
 ```
 
-# Plot
+### Plot
 
 - plots the incidence
 - plots the serial interval distribution
@@ -353,7 +451,7 @@ p_I_dw <- plot(mys_dw_parametric_si, "incid")
 p_I_dw + theme_bw()
 ```
 
-![](repro_covid19_malaysia_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
+![](repro_covid19_malaysia_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
 
 
 
@@ -362,7 +460,7 @@ p_SI_dw <- plot(mys_dw_parametric_si, "SI")
 p_SI_dw + theme_bw()
 ```
 
-![](repro_covid19_malaysia_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
+![](repro_covid19_malaysia_files/figure-html/unnamed-chunk-16-1.png)<!-- -->
 
 - the 7-day sliding window estimates of instantaneous $R_e$
 
@@ -372,7 +470,97 @@ p_Ri_dw <- plot(mys_dw_parametric_si, "R")
 p_Ri_dw + theme_bw()
 ```
 
-![](repro_covid19_malaysia_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
+![](repro_covid19_malaysia_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
+
+
+## Based on Du et al
+
+### Du et al SI
+
+mean SI = 7.5, SD SI = 3.4 
+
+
+```r
+mys_dw <- mys_dw %>% select(Time, I)
+mys_dw_parametric_si_du <- estimate_R(mys_dw, 
+                                method = "parametric_si",
+                                config = make_config(list(mean_si = 3.96, 
+                                                          std_si = 4.75)))
+```
+
+```
+## Default config will estimate R on weekly sliding windows.
+##     To change this change the t_start and t_end arguments.
+```
+
+```
+## Warning in estimate_R_func(incid = incid, method = method, si_sample = si_sample, : You're estimating R too early in the epidemic to get the desired
+##             posterior CV.
+```
+
+```r
+glimpse(mys_dw_parametric_si_du)
+```
+
+```
+## List of 8
+##  $ R         :'data.frame':	127 obs. of  11 variables:
+##   ..$ t_start          : num [1:127] 2 3 4 5 6 7 8 9 10 11 ...
+##   ..$ t_end            : num [1:127] 8 9 10 11 12 13 14 15 16 17 ...
+##   ..$ Mean(R)          : num [1:127] 0.973 0.909 1.034 1.537 1.165 ...
+##   ..$ Std(R)           : num [1:127] 0.397 0.406 0.463 0.581 0.476 ...
+##   ..$ Quantile.0.025(R): num [1:127] 0.357 0.295 0.336 0.618 0.427 ...
+##   ..$ Quantile.0.05(R) : num [1:127] 0.424 0.358 0.408 0.721 0.507 ...
+##   ..$ Quantile.0.25(R) : num [1:127] 0.684 0.612 0.697 1.116 0.819 ...
+##   ..$ Median(R)        : num [1:127] 0.919 0.849 0.966 1.464 1.101 ...
+##   ..$ Quantile.0.75(R) : num [1:127] 1.2 1.14 1.3 1.88 1.44 ...
+##   ..$ Quantile.0.95(R) : num [1:127] 1.7 1.66 1.89 2.6 2.04 ...
+##   ..$ Quantile.0.975(R): num [1:127] 1.89 1.86 2.12 2.87 2.27 ...
+##  $ method    : chr "parametric_si"
+##  $ si_distr  : Named num [1:135] 0 0.361 0.204 0.1032 0.0695 ...
+##   ..- attr(*, "names")= chr [1:135] "t0" "t1" "t2" "t3" ...
+##  $ SI.Moments:'data.frame':	1 obs. of  2 variables:
+##   ..$ Mean: num 3.96
+##   ..$ Std : num 4.76
+##  $ dates     : int [1:134] 1 2 3 4 5 6 7 8 9 10 ...
+##  $ I         : num [1:134] 3 1 0 0 3 1 0 0 0 0 ...
+##  $ I_local   : num [1:134] 0 1 0 0 3 1 0 0 0 0 ...
+##  $ I_imported: num [1:134] 3 0 0 0 0 0 0 0 0 0 ...
+##  - attr(*, "class")= chr "estimate_R"
+```
+
+### Plot
+
+- plots the incidence
+- plots the serial interval distribution
+- plot of R
+
+
+```r
+p_I_dw_du <- plot(mys_dw_parametric_si_du, "incid") 
+p_I_dw_du + theme_bw()
+```
+
+![](repro_covid19_malaysia_files/figure-html/unnamed-chunk-19-1.png)<!-- -->
+
+
+
+```r
+p_SI_dw_du <- plot(mys_dw_parametric_si_du, "SI")  
+p_SI_dw_du + theme_bw()
+```
+
+![](repro_covid19_malaysia_files/figure-html/unnamed-chunk-20-1.png)<!-- -->
+
+- the 7-day sliding window estimates of instantaneous $R_e$
+
+
+```r
+p_Ri_dw_du <- plot(mys_dw_parametric_si_du, "R")
+p_Ri_dw_du + theme_bw()
+```
+
+![](repro_covid19_malaysia_files/figure-html/unnamed-chunk-21-1.png)<!-- -->
 
 
 
