@@ -53,11 +53,14 @@ covid <- read_csv('covid.csv')
 
 Malaysia data from github
 
+mys starts from first local case (Feb 4th)
+
 ```{r}
 mys <- covid %>% 
   select(date, country, type , cases) %>% 
   filter(country == 'Malaysia', type == 'confirmed') %>% clean_names() %>%
-  rename(Time = date, I = cases) %>% data.frame()
+  rename(Time = date, I = cases) %>% filter(Time > '2020-02-3') %>%
+  data.frame()
 ```
 
 Malaysia data from dataworld
@@ -74,7 +77,8 @@ mys_dw <- read_excel(tf, sheet = 'd(Base)') %>% clean_names() %>%
   data.frame()
 mys_dw_state <- read_excel(tf, sheet = 'State') %>% clean_names() %>%
   select(Time = date, perlis:total, east_malaysia, west_malaysia) %>%
-  mutate_if(is.POSIXt, as.Date) %>% data.frame()
+  mutate_if(is.POSIXt, as.Date) %>% filter(Time > '2020-02-3') %>%
+  data.frame()
 ```
 
 # Calculate R
@@ -264,6 +268,39 @@ p_SI_dw_du + theme_bw()
 ```{r}
 p_Ri_dw_du <- plot(mys_dw_parametric_si_du, "R")
 p_Ri_dw_du + theme_bw()
+```
+# Values of R at MCO 1, 2 and 3
+
+- First case local Malaysia on Feb 4 (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7293423/)
+- MCO 1 on 18 March - 31 March
+- MCO 2 on 1 April - 14 April
+- MCO 3 on 15 April - 28 April
+- MCO 4 on 29 April - 12 May
+
+Calculate difference in days
+
+```{r}
+first_mco1 <- interval(as_date('2020-02-04'), as_date('2020-03-17'))
+first_mco1 <- first_mco1 / ddays(1)
+
+mco1_mco2 <- interval(as_date('2020-03-18'), as_date('2020-03-31'))
+mco1_mco2 <- mco1_mco2 / ddays(1)
+
+mco2_mco3 <- interval(as_date('2020-04-01'), as_date('2020-04-14'))
+mco2_mco3 <- mco2_mco3 / ddays(1)
+
+mco3_mco4 <- interval(as_date('2020-04-15'), as_date('2020-04-28'))
+mco3_mco4 <- mco3_mco4 / ddays(1)
+
+mco4_mco5 <- interval(as_date('2020-04-29'), as_date('2020-05-12'))
+mco4_mco5 <- mco4_mco5 / ddays(1)
+
+first_mco1 ; mco1_mco2 ; mco2_mco3 ; mco3_mco4 ; mco4_mco5
+```
+
+
+```{r}
+mys_dw_parametric_si$R
 ```
 
 
