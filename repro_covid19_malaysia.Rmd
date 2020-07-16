@@ -3,9 +3,9 @@ title: "Reproduction Number for Malaysia"
 author: "Kamarul Imran Musa"
 date: "6/16/2020 updated on `r Sys.Date()`"
 output:
-  pdf_document: default
   html_document:
     keep_md: yes
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -112,18 +112,48 @@ glimpse(mys_parametric_si)
 
 ```{r}
 p_I <- plot(mys_parametric_si, "incid") 
-p_I + theme_bw()
+p_I + theme_bw() + 
+  geom_vline(xintercept = 44, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 58, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 72, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 86, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 100, colour = 'red', size = 1.2) +
+  geom_text(aes(x = 44, label = '\nMCO Phase 1', y=300),
+            colour="blue", angle=90, hjust = 1.2, text=element_text(size=11)) +
+  geom_text(aes(x = 58, label = '\nMCO Phase 2', y= 315),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11)) +
+  geom_text(aes(x = 72, label = '\nMCO Phase 3', y=250),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11)) +
+  geom_text(aes(x = 86, label = '\nMCO Phase 4', y=250),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11)) +
+  geom_text(aes(x = 100, label = '\nMCO RMCO', y=250),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11))
 ```
 
 ```{r}
 p_SI <- plot(mys_parametric_si, "SI")  
-p_SI + theme_bw()
+p_SI + theme_bw() 
 ```
 - the 7-day sliding window estimates of instantaneous $R_e$
 
 ```{r}
 p_Ri <- plot(mys_parametric_si, "R")
-p_Ri + theme_bw()
+p_Ri + theme_bw() + 
+  geom_vline(xintercept = 44, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 58, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 72, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 86, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 100, colour = 'red', size = 1.2) +
+  geom_text(aes(x = 44, label = '\nMCO Phase 1', y=20),
+            colour="blue", angle=90, hjust = 1.2, text=element_text(size=11)) +
+  geom_text(aes(x = 58, label = '\nMCO Phase 2', y= 20),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11)) +
+  geom_text(aes(x = 72, label = '\nMCO Phase 3', y=20),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11)) +
+  geom_text(aes(x = 86, label = '\nMCO Phase 4', y=20),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11)) +
+  geom_text(aes(x = 100, label = '\nMCO RMCO', y=20),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11))
 ```
 
 The $R_t$ is very high nearly day 50. Reasons:
@@ -175,7 +205,22 @@ glimpse(mys_parametric_si_du)
 
 ```{r}
 p_I_du <- plot(mys_parametric_si_du, "incid") 
-p_I_du + theme_bw()
+p_I_du + theme_bw() + 
+  geom_vline(xintercept = 44, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 58, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 72, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 86, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 100, colour = 'red', size = 1.2) +
+  geom_text(aes(x = 44, label = '\nMCO Phase 1', y=300),
+            colour="blue", angle=90, hjust = 1.2, text=element_text(size=11)) +
+  geom_text(aes(x = 58, label = '\nMCO Phase 2', y= 315),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11)) +
+  geom_text(aes(x = 72, label = '\nMCO Phase 3', y=250),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11)) +
+  geom_text(aes(x = 86, label = '\nMCO Phase 4', y=250),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11)) +
+  geom_text(aes(x = 100, label = '\nMCO RMCO', y=250),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11))
 ```
 
 ```{r}
@@ -187,7 +232,22 @@ p_SI_du + theme_bw()
 
 ```{r}
 p_Ri_du <- plot(mys_parametric_si_du, "R")
-p_Ri_du + theme_bw()
+p_Ri_du + theme_bw() + 
+  geom_vline(xintercept = 44, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 58, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 72, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 86, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 100, colour = 'red', size = 1.2) +
+  geom_text(aes(x = 44, label = '\nMCO Phase 1', y=20),
+            colour="blue", angle=90, hjust = 1.2, text=element_text(size=11)) +
+  geom_text(aes(x = 58, label = '\nMCO Phase 2', y= 20),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11)) +
+  geom_text(aes(x = 72, label = '\nMCO Phase 3', y=20),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11)) +
+  geom_text(aes(x = 86, label = '\nMCO Phase 4', y=20),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11)) +
+  geom_text(aes(x = 100, label = '\nMCO RMCO', y=20),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11))
 ```
 
 
@@ -330,7 +390,7 @@ Calculate the difference
 data_mco %>%
     group_by(MCO_type) %>%
     mutate(mean_diff = meanR - lag(meanR),
-           mean_diff_percent = (meanR - lag(meanR) / meanR)*100) %>% 
+           mean_diff_percent = (mean_diff / (meanR - mean_diff))*100) %>% 
   select(day, MCO_type, meanR, mean_diff, mean_diff_percent, everything())
 ```
 

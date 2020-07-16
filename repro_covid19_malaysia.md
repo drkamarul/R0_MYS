@@ -1,10 +1,11 @@
 ---
 title: "Reproduction Number for Malaysia"
 author: "Kamarul Imran Musa"
-date: "6/16/2020 updated on 2020-07-16"
-output: 
-  html_document: 
+date: "6/16/2020 updated on 2020-07-17"
+output:
+  html_document:
     keep_md: yes
+  pdf_document: default
 ---
 
 
@@ -141,11 +142,11 @@ GET("https://query.data.world/s/dl2knkmq7y2erjews5hnsc6vjbr3pc",
 
 ```
 ## Response [https://download.data.world/file_download/erhanazrai/httpsdocsgooglecomspreadsheetsd15a43eb68lt7ggk9vavy/Covid19-KKM.xlsx?auth=eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJwcm9kLXVzZXItY2xpZW50OmtpbTQ1OTciLCJpc3MiOiJhZ2VudDpraW00NTk3Ojo0Y2JiNWNhZi0yYmQ4LTQxNjAtOTVlYi00NzkzNmIzYmQwNTIiLCJpYXQiOjE1OTMyNjYzNTksInJvbGUiOlsidXNlciIsInVzZXJfYXBpX2FkbWluIiwidXNlcl9hcGlfcmVhZCIsInVzZXJfYXBpX3dyaXRlIl0sImdlbmVyYWwtcHVycG9zZSI6ZmFsc2UsInVybCI6IjNlNjU2OTA0ZDk5Nzk0YzY4NDc2NmE5Y2NkMjg0MmZlOTFmYjU0YjQifQ.yd0caZAlJKAFaMelFfRE-68UjkRNV1Z7uZSj5i7TeCldQZagrXUFjvJHbac7Cbr__2SHUQIe451R7d86BOIyNQ]
-##   Date: 2020-07-16 15:34
+##   Date: 2020-07-16 16:43
 ##   Status: 200
 ##   Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
 ##   Size: 566 kB
-## <ON DISK>  C:\Users\DRKAMA~1\AppData\Local\Temp\Rtmpofss3E\file512c62c25781.xlsx
+## <ON DISK>  C:\Users\DRKAMA~1\AppData\Local\Temp\RtmpMlrpnI\file516c6c2458fb.xlsx
 ```
 
 ```r
@@ -248,7 +249,34 @@ glimpse(mys_parametric_si)
 
 ```r
 p_I <- plot(mys_parametric_si, "incid") 
-p_I + theme_bw()
+p_I + theme_bw() + 
+  geom_vline(xintercept = 44, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 58, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 72, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 86, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 100, colour = 'red', size = 1.2) +
+  geom_text(aes(x = 44, label = '\nMCO Phase 1', y=300),
+            colour="blue", angle=90, hjust = 1.2, text=element_text(size=11)) +
+  geom_text(aes(x = 58, label = '\nMCO Phase 2', y= 315),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11)) +
+  geom_text(aes(x = 72, label = '\nMCO Phase 3', y=250),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11)) +
+  geom_text(aes(x = 86, label = '\nMCO Phase 4', y=250),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11)) +
+  geom_text(aes(x = 100, label = '\nMCO RMCO', y=250),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11))
+```
+
+```
+## Warning: Ignoring unknown parameters: text
+
+## Warning: Ignoring unknown parameters: text
+
+## Warning: Ignoring unknown parameters: text
+
+## Warning: Ignoring unknown parameters: text
+
+## Warning: Ignoring unknown parameters: text
 ```
 
 ![](repro_covid19_malaysia_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
@@ -256,7 +284,7 @@ p_I + theme_bw()
 
 ```r
 p_SI <- plot(mys_parametric_si, "SI")  
-p_SI + theme_bw()
+p_SI + theme_bw() 
 ```
 
 ![](repro_covid19_malaysia_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
@@ -265,7 +293,34 @@ p_SI + theme_bw()
 
 ```r
 p_Ri <- plot(mys_parametric_si, "R")
-p_Ri + theme_bw()
+p_Ri + theme_bw() + 
+  geom_vline(xintercept = 44, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 58, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 72, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 86, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 100, colour = 'red', size = 1.2) +
+  geom_text(aes(x = 44, label = '\nMCO Phase 1', y=20),
+            colour="blue", angle=90, hjust = 1.2, text=element_text(size=11)) +
+  geom_text(aes(x = 58, label = '\nMCO Phase 2', y= 20),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11)) +
+  geom_text(aes(x = 72, label = '\nMCO Phase 3', y=20),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11)) +
+  geom_text(aes(x = 86, label = '\nMCO Phase 4', y=20),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11)) +
+  geom_text(aes(x = 100, label = '\nMCO RMCO', y=20),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11))
+```
+
+```
+## Warning: Ignoring unknown parameters: text
+
+## Warning: Ignoring unknown parameters: text
+
+## Warning: Ignoring unknown parameters: text
+
+## Warning: Ignoring unknown parameters: text
+
+## Warning: Ignoring unknown parameters: text
 ```
 
 ![](repro_covid19_malaysia_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
@@ -362,7 +417,34 @@ glimpse(mys_parametric_si_du)
 
 ```r
 p_I_du <- plot(mys_parametric_si_du, "incid") 
-p_I_du + theme_bw()
+p_I_du + theme_bw() + 
+  geom_vline(xintercept = 44, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 58, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 72, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 86, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 100, colour = 'red', size = 1.2) +
+  geom_text(aes(x = 44, label = '\nMCO Phase 1', y=300),
+            colour="blue", angle=90, hjust = 1.2, text=element_text(size=11)) +
+  geom_text(aes(x = 58, label = '\nMCO Phase 2', y= 315),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11)) +
+  geom_text(aes(x = 72, label = '\nMCO Phase 3', y=250),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11)) +
+  geom_text(aes(x = 86, label = '\nMCO Phase 4', y=250),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11)) +
+  geom_text(aes(x = 100, label = '\nMCO RMCO', y=250),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11))
+```
+
+```
+## Warning: Ignoring unknown parameters: text
+
+## Warning: Ignoring unknown parameters: text
+
+## Warning: Ignoring unknown parameters: text
+
+## Warning: Ignoring unknown parameters: text
+
+## Warning: Ignoring unknown parameters: text
 ```
 
 ![](repro_covid19_malaysia_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
@@ -380,7 +462,46 @@ p_SI_du + theme_bw()
 
 ```r
 p_Ri_du <- plot(mys_parametric_si_du, "R")
-p_Ri_du + theme_bw()
+p_Ri_du + theme_bw() + 
+  geom_vline(xintercept = 44, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 58, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 72, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 86, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 100, colour = 'red', size = 1.2) +
+  geom_text(aes(x = 44, label = '\nMCO Phase 1', y=20),
+            colour="blue", angle=90, hjust = 1.2, text=element_text(size=11)) +
+  geom_text(aes(x = 58, label = '\nMCO Phase 2', y= 20),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11)) +
+  geom_text(aes(x = 72, label = '\nMCO Phase 3', y=20),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11)) +
+  geom_text(aes(x = 86, label = '\nMCO Phase 4', y=20),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11)) +
+  geom_text(aes(x = 100, label = '\nMCO RMCO', y=20),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11))
+```
+
+```
+## Warning: Ignoring unknown parameters: text
+
+## Warning: Ignoring unknown parameters: text
+
+## Warning: Ignoring unknown parameters: text
+
+## Warning: Ignoring unknown parameters: text
+
+## Warning: Ignoring unknown parameters: text
+```
+
+```
+## Warning: Removed 136 rows containing missing values (geom_text).
+
+## Warning: Removed 136 rows containing missing values (geom_text).
+
+## Warning: Removed 136 rows containing missing values (geom_text).
+
+## Warning: Removed 136 rows containing missing values (geom_text).
+
+## Warning: Removed 136 rows containing missing values (geom_text).
 ```
 
 ![](repro_covid19_malaysia_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
@@ -1123,7 +1244,7 @@ Calculate the difference
 data_mco %>%
     group_by(MCO_type) %>%
     mutate(mean_diff = meanR - lag(meanR),
-           mean_diff_percent = (meanR - lag(meanR) / meanR)*100) %>% 
+           mean_diff_percent = (mean_diff / (meanR - mean_diff))*100) %>% 
   select(day, MCO_type, meanR, mean_diff, mean_diff_percent, everything())
 ```
 
@@ -1133,17 +1254,17 @@ data_mco %>%
 ##    day   MCO_type meanR mean_diff mean_diff_perce~ t_start t_end `Std(R)`
 ##    <chr> <chr>    <dbl>     <dbl>            <dbl>   <dbl> <dbl>    <dbl>
 ##  1 D1    MCO1     2.28    NA                 NA          2     8   0.933 
-##  2 D5    MCO1     1.32    -0.969            -42.1        7    13   0.497 
-##  3 D10   MCO1     1.54     0.225             68.7       12    18   0.514 
+##  2 D5    MCO1     1.32    -0.969            -42.4        7    13   0.497 
+##  3 D10   MCO1     1.54     0.225             17.1       12    18   0.514 
 ##  4 D1    MCO2     1.70    NA                 NA         55    61   0.0536
-##  5 D5    MCO2     1.23    -0.476            -16.2       60    66   0.0368
-##  6 D10   MCO2     1.08    -0.148             -5.82      65    71   0.0316
+##  5 D5    MCO2     1.23    -0.476            -28.0       60    66   0.0368
+##  6 D10   MCO2     1.08    -0.148            -12.0       65    71   0.0316
 ##  7 D1    MCO3     1.07    NA                 NA         68    74   0.0311
-##  8 D5    MCO3     0.883   -0.192            -33.4       73    79   0.0276
-##  9 D10   MCO3     0.836   -0.0473           -22.1       78    84   0.0278
+##  8 D5    MCO3     0.883   -0.192            -17.8       73    79   0.0276
+##  9 D10   MCO3     0.836   -0.0473            -5.36      78    84   0.0278
 ## 10 D1    MCO4     0.677   NA                 NA         80    86   0.0255
-## 11 D5    MCO4     0.525   -0.152            -76.5       85    91   0.0250
-## 12 D10   MCO4     0.606    0.0817           -25.9       88    94   0.0305
+## 11 D5    MCO4     0.525   -0.152            -22.5       85    91   0.0250
+## 12 D10   MCO4     0.606    0.0817            15.6       88    94   0.0305
 ## # ... with 7 more variables: `Quantile.0.025(R)` <dbl>,
 ## #   `Quantile.0.05(R)` <dbl>, `Quantile.0.25(R)` <dbl>, `Median(R)` <dbl>,
 ## #   `Quantile.0.75(R)` <dbl>, `Quantile.0.95(R)` <dbl>,
