@@ -1,14 +1,15 @@
 ---
 title: "Reproduction Number for Malaysia"
 author: "Kamarul Imran Musa"
-date: "6/16/2020"
-output: 
-  html_document: 
+date: "6/16/2020 updated on `r Sys.Date()`"
+output:
+  pdf_document: default
+  html_document:
     keep_md: yes
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, dpi = 300)
 ```
 
 # Motivation
@@ -297,10 +298,40 @@ mco4_mco5 <- mco4_mco5 / ddays(1)
 
 first_mco1 ; mco1_mco2 ; mco2_mco3 ; mco3_mco4 ; mco4_mco5
 ```
+In the table \@ref(tab:si), we see the estimated R value from the first day until . 
 
+```{r si}
+mys_dw_parametric_si$R
+```
+
+
+In the table \@ref(tab:mco), we show for each MCO phase, the difference in the mean R value and the percentage of difference in means between
+
+1. day 10 and day 5
+2. day 5 and day 1 . 
+
+```{r mco}
+MCO <- mys_dw_parametric_si$R %>% 
+  filter(t_start %in% c(2, 7, 12, 55, 60, 65, 68, 73, 78, 80, 85, 88))
+MCO
+MCO_type <- c(rep('MCO1',3), 
+              rep('MCO2',3),
+              rep('MCO3',3),
+              rep('MCO4',3)) 
+data_mco <- data.frame(day =  c('D1', 'D5' , 'D10'), MCO_type)
+data_mco <- bind_cols(data_mco, MCO) %>% rename(meanR = "Mean(R)")
+data_mco
+```
+
+
+Calculate the difference
 
 ```{r}
-mys_dw_parametric_si$R
+data_mco %>%
+    group_by(MCO_type) %>%
+    mutate(mean_diff = meanR - lag(meanR),
+           mean_diff_percent = (meanR - lag(meanR) / meanR)*100) %>% 
+  select(day, MCO_type, meanR, mean_diff, mean_diff_percent, everything())
 ```
 
 

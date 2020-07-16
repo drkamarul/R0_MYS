@@ -1,7 +1,7 @@
 ---
 title: "Reproduction Number for Malaysia"
 author: "Kamarul Imran Musa"
-date: "6/16/2020"
+date: "6/16/2020 updated on 2020-07-16"
 output: 
   html_document: 
     keep_md: yes
@@ -141,11 +141,11 @@ GET("https://query.data.world/s/dl2knkmq7y2erjews5hnsc6vjbr3pc",
 
 ```
 ## Response [https://download.data.world/file_download/erhanazrai/httpsdocsgooglecomspreadsheetsd15a43eb68lt7ggk9vavy/Covid19-KKM.xlsx?auth=eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJwcm9kLXVzZXItY2xpZW50OmtpbTQ1OTciLCJpc3MiOiJhZ2VudDpraW00NTk3Ojo0Y2JiNWNhZi0yYmQ4LTQxNjAtOTVlYi00NzkzNmIzYmQwNTIiLCJpYXQiOjE1OTMyNjYzNTksInJvbGUiOlsidXNlciIsInVzZXJfYXBpX2FkbWluIiwidXNlcl9hcGlfcmVhZCIsInVzZXJfYXBpX3dyaXRlIl0sImdlbmVyYWwtcHVycG9zZSI6ZmFsc2UsInVybCI6IjNlNjU2OTA0ZDk5Nzk0YzY4NDc2NmE5Y2NkMjg0MmZlOTFmYjU0YjQifQ.yd0caZAlJKAFaMelFfRE-68UjkRNV1Z7uZSj5i7TeCldQZagrXUFjvJHbac7Cbr__2SHUQIe451R7d86BOIyNQ]
-##   Date: 2020-06-28 15:08
+##   Date: 2020-07-16 15:34
 ##   Status: 200
 ##   Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
 ##   Size: 566 kB
-## <ON DISK>  C:\Users\DRKAMA~1\AppData\Local\Temp\Rtmpw9EHKV\file572cc085685.xlsx
+## <ON DISK>  C:\Users\DRKAMA~1\AppData\Local\Temp\Rtmpofss3E\file512c62c25781.xlsx
 ```
 
 ```r
@@ -614,7 +614,7 @@ first_mco1 ; mco1_mco2 ; mco2_mco3 ; mco3_mco4 ; mco4_mco5
 ```
 ## [1] 13
 ```
-
+In the table \@ref(tab:si), we see the estimated R value from the first day until . 
 
 
 ```r
@@ -1009,6 +1009,148 @@ mys_dw_parametric_si$R
 ```
 
 
+In the table \@ref(tab:mco), we show for each MCO phase, the difference in the mean R value and the percentage of difference in means between
+
+1. day 10 and day 5
+2. day 5 and day 1 . 
+
+
+```r
+MCO <- mys_dw_parametric_si$R %>% 
+  filter(t_start %in% c(2, 7, 12, 55, 60, 65, 68, 73, 78, 80, 85, 88))
+MCO
+```
+
+```
+##    t_start t_end   Mean(R)     Std(R) Quantile.0.025(R) Quantile.0.05(R)
+## 1        2     8 2.2845115 0.93264793         0.8383755        0.9949104
+## 2        7    13 1.3156446 0.49726691         0.5289574        0.6174725
+## 3       12    18 1.5407773 0.51359243         0.7045415        0.8038111
+## 4       55    61 1.7020363 0.05363572         1.5985221        1.6147847
+## 5       60    66 1.2261381 0.03681914         1.1550267        1.1662110
+## 6       65    71 1.0786166 0.03161481         1.0175350        1.0271470
+## 7       68    74 1.0748069 0.03105289         1.0147985        1.0242445
+## 8       73    79 0.8829917 0.02762048         0.8296795        0.8380566
+## 9       78    84 0.8356727 0.02776337         0.7821363        0.7905364
+## 10      80    86 0.6770363 0.02546257         0.6280437        0.6357055
+## 11      85    91 0.5247567 0.02498841         0.4769169        0.4843419
+## 12      88    94 0.6064447 0.03047499         0.5481783        0.5572034
+##    Quantile.0.25(R) Median(R) Quantile.0.75(R) Quantile.0.95(R)
+## 1         1.6064721 2.1589248        2.8262080        4.0028582
+## 2         0.9552814 1.2535531        1.6085572        2.2257691
+## 3         1.1705876 1.4841026        1.8493513        2.4711756
+## 4         1.6655590 1.7014729        1.7378994        1.7912096
+## 5         1.2011071 1.2257695        1.2507673        1.2873222
+## 6         1.0571277 1.0783077        1.0997688        1.1311398
+## 7         1.0537022 1.0745078        1.0955856        1.1263893
+## 8         0.8642084 0.8827038        0.9014612        0.9289092
+## 9         0.8167828 0.8353653        0.8542275        0.8818577
+## 10        0.6596925 0.6767171        0.6940321        0.7194558
+## 11        0.5076931 0.5243601        0.5413880        0.5665243
+## 12        0.5856209 0.6059343        0.6267122        0.6574270
+##    Quantile.0.975(R)
+## 1          4.4427399
+## 2          2.4545180
+## 3          2.6986182
+## 4          1.8087520
+## 5          1.2993437
+## 6          1.1414534
+## 7          1.1365147
+## 8          0.9379405
+## 9          0.8909562
+## 10         0.7278427
+## 11         0.5748502
+## 12         0.6676116
+```
+
+```r
+MCO_type <- c(rep('MCO1',3), 
+              rep('MCO2',3),
+              rep('MCO3',3),
+              rep('MCO4',3)) 
+data_mco <- data.frame(day =  c('D1', 'D5' , 'D10'), MCO_type)
+data_mco <- bind_cols(data_mco, MCO) %>% rename(meanR = "Mean(R)")
+data_mco
+```
+
+```
+##    day MCO_type t_start t_end     meanR     Std(R) Quantile.0.025(R)
+## 1   D1     MCO1       2     8 2.2845115 0.93264793         0.8383755
+## 2   D5     MCO1       7    13 1.3156446 0.49726691         0.5289574
+## 3  D10     MCO1      12    18 1.5407773 0.51359243         0.7045415
+## 4   D1     MCO2      55    61 1.7020363 0.05363572         1.5985221
+## 5   D5     MCO2      60    66 1.2261381 0.03681914         1.1550267
+## 6  D10     MCO2      65    71 1.0786166 0.03161481         1.0175350
+## 7   D1     MCO3      68    74 1.0748069 0.03105289         1.0147985
+## 8   D5     MCO3      73    79 0.8829917 0.02762048         0.8296795
+## 9  D10     MCO3      78    84 0.8356727 0.02776337         0.7821363
+## 10  D1     MCO4      80    86 0.6770363 0.02546257         0.6280437
+## 11  D5     MCO4      85    91 0.5247567 0.02498841         0.4769169
+## 12 D10     MCO4      88    94 0.6064447 0.03047499         0.5481783
+##    Quantile.0.05(R) Quantile.0.25(R) Median(R) Quantile.0.75(R)
+## 1         0.9949104        1.6064721 2.1589248        2.8262080
+## 2         0.6174725        0.9552814 1.2535531        1.6085572
+## 3         0.8038111        1.1705876 1.4841026        1.8493513
+## 4         1.6147847        1.6655590 1.7014729        1.7378994
+## 5         1.1662110        1.2011071 1.2257695        1.2507673
+## 6         1.0271470        1.0571277 1.0783077        1.0997688
+## 7         1.0242445        1.0537022 1.0745078        1.0955856
+## 8         0.8380566        0.8642084 0.8827038        0.9014612
+## 9         0.7905364        0.8167828 0.8353653        0.8542275
+## 10        0.6357055        0.6596925 0.6767171        0.6940321
+## 11        0.4843419        0.5076931 0.5243601        0.5413880
+## 12        0.5572034        0.5856209 0.6059343        0.6267122
+##    Quantile.0.95(R) Quantile.0.975(R)
+## 1         4.0028582         4.4427399
+## 2         2.2257691         2.4545180
+## 3         2.4711756         2.6986182
+## 4         1.7912096         1.8087520
+## 5         1.2873222         1.2993437
+## 6         1.1311398         1.1414534
+## 7         1.1263893         1.1365147
+## 8         0.9289092         0.9379405
+## 9         0.8818577         0.8909562
+## 10        0.7194558         0.7278427
+## 11        0.5665243         0.5748502
+## 12        0.6574270         0.6676116
+```
+
+
+Calculate the difference
+
+
+```r
+data_mco %>%
+    group_by(MCO_type) %>%
+    mutate(mean_diff = meanR - lag(meanR),
+           mean_diff_percent = (meanR - lag(meanR) / meanR)*100) %>% 
+  select(day, MCO_type, meanR, mean_diff, mean_diff_percent, everything())
+```
+
+```
+## # A tibble: 12 x 15
+## # Groups:   MCO_type [4]
+##    day   MCO_type meanR mean_diff mean_diff_perce~ t_start t_end `Std(R)`
+##    <chr> <chr>    <dbl>     <dbl>            <dbl>   <dbl> <dbl>    <dbl>
+##  1 D1    MCO1     2.28    NA                 NA          2     8   0.933 
+##  2 D5    MCO1     1.32    -0.969            -42.1        7    13   0.497 
+##  3 D10   MCO1     1.54     0.225             68.7       12    18   0.514 
+##  4 D1    MCO2     1.70    NA                 NA         55    61   0.0536
+##  5 D5    MCO2     1.23    -0.476            -16.2       60    66   0.0368
+##  6 D10   MCO2     1.08    -0.148             -5.82      65    71   0.0316
+##  7 D1    MCO3     1.07    NA                 NA         68    74   0.0311
+##  8 D5    MCO3     0.883   -0.192            -33.4       73    79   0.0276
+##  9 D10   MCO3     0.836   -0.0473           -22.1       78    84   0.0278
+## 10 D1    MCO4     0.677   NA                 NA         80    86   0.0255
+## 11 D5    MCO4     0.525   -0.152            -76.5       85    91   0.0250
+## 12 D10   MCO4     0.606    0.0817           -25.9       88    94   0.0305
+## # ... with 7 more variables: `Quantile.0.025(R)` <dbl>,
+## #   `Quantile.0.05(R)` <dbl>, `Quantile.0.25(R)` <dbl>, `Median(R)` <dbl>,
+## #   `Quantile.0.75(R)` <dbl>, `Quantile.0.95(R)` <dbl>,
+## #   `Quantile.0.975(R)` <dbl>
+```
+
+
 
 ```r
 sessionInfo()
@@ -1058,9 +1200,9 @@ sessionInfo()
 ## [52] grid_4.0.2            rstudioapi_0.11       labeling_0.3         
 ## [55] rmarkdown_2.3         gtable_0.3.0          DBI_1.1.0            
 ## [58] curl_4.3              reshape2_1.4.4        R6_2.4.1             
-## [61] gridExtra_2.3         knitr_1.29            rprojroot_1.3-2      
-## [64] stringi_1.4.6         Rcpp_1.0.4.6          vctrs_0.3.1          
-## [67] dbplyr_1.4.4          tidyselect_1.1.0      xfun_0.15            
-## [70] coda_0.19-3
+## [61] gridExtra_2.3         knitr_1.29            utf8_1.1.4           
+## [64] rprojroot_1.3-2       stringi_1.4.6         Rcpp_1.0.4.6         
+## [67] vctrs_0.3.1           dbplyr_1.4.4          tidyselect_1.1.0     
+## [70] xfun_0.15             coda_0.19-3
 ```
 
