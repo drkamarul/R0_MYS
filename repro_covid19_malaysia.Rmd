@@ -108,7 +108,7 @@ mys_parametric_si <- estimate_R(mys,
                                 config = make_config(list(mean_si = 7.5, 
                                                           std_si = 3.4)))
 glimpse(mys_parametric_si)
-mys_dw_parametric_si$R
+mys_parametric_si$R
 ```
 
 
