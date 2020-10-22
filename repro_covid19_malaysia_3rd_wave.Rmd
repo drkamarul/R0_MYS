@@ -1,0 +1,432 @@
+---
+title: "Reproduction Number for Malaysia"
+author: "Kamarul Imran Musa"
+date: "6/16/2020 updated on `r Sys.Date()`"
+output:
+  html_document: 
+    keep_md: yes
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, dpi = 300)
+```
+
+# Motivation
+
+To model the time-dependent reproduction number of COVID-19 for Malaysia
+
+# Methods
+
+- Reproduce methods proposed in EpiEstim package
+- Reference  https://cran.r-project.org/web/packages/EpiEstim/vignettes/demo.html
+
+Data from
+
+- WHO from github
+- Crowd-sourcing data from data world
+
+# Prepare environment
+
+```{r}
+library(tidyverse)
+library(EpiEstim)
+library(here)
+library(janitor)
+library(lubridate)
+```
+
+
+# Data
+
+## From github, save and read again
+
+and save locally as covid
+and read
+
+```{r}
+# covid <- read_csv('https://raw.githubusercontent.com/RamiKrispin/coronavirus/master/csv/coronavirus.csv')
+# write_csv(covid, 'covid.csv')
+covid <- read_csv('covid.csv')
+```
+
+## Malaysia data
+
+Malaysia data from github
+
+mys starts from first local case (Feb 4th) - Day 1 
+
+```{r}
+mys <- covid %>% 
+  select(date, country, type , cases) %>% 
+  filter(country == 'Malaysia', type == 'confirmed') %>% clean_names() %>%
+  rename(Time = date, I = cases) %>% filter(Time > '2020-02-3') %>%
+  data.frame()
+```
+
+Malaysia data from dataworld
+
+```{r}
+library("httr")
+library("readxl")
+GET("https://query.data.world/s/dl2knkmq7y2erjews5hnsc6vjbr3pc", 
+    write_disk(tf <- tempfile(fileext = ".xlsx")))
+mys_dw <- read_excel(tf, sheet = 'd(Base)') %>% clean_names() %>%
+  select(Time = date, mco_phase, cum_pos = positive, I = d_positive) %>%
+  mutate_if(is.POSIXt, as.Date) %>% 
+  filter(Time < '2020-10-09') %>%
+  data.frame()
+mys_dw_state <- read_excel(tf, sheet = 'State') %>% clean_names() %>%
+  select(Time = date, perlis:total, east_malaysia, west_malaysia) %>%
+  mutate_if(is.POSIXt, as.Date) %>% filter(Time > '2020-02-3') %>%
+  data.frame()
+```
+### Take data from Day 1 to Day 100
+
+```{r}
+mys <- mys %>% filter(Time < '2020-05-14')
+```
+
+# Calculate R
+
+## Based on Wuhan
+
+Setting the mean_si = 7.5 and std_si = 3.4. What would be the mean_si and std_si?
+
+The problem is R is estimated too early.
+
+What would be the earliest time to start and time to end?
+
+t_start = need to adjust
+t_end = need to adjust
+
+For Malaysia data John Hopkins 
+
+```{r}
+mys_parametric_si <- estimate_R(mys, 
+                                method = "parametric_si",
+                                config = make_config(list(mean_si = 7.5, 
+                                                          std_si = 3.4)))
+glimpse(mys_parametric_si)
+mys_parametric_si$R
+```
+
+
+
+
+
+### Plot
+
+- plots the incidence
+- plots the serial interval distribution
+- plot of R
+
+```{r}
+p_I <- plot(mys_parametric_si, "incid") 
+p_I + theme_bw() + 
+  geom_vline(xintercept = 44, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 58, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 72, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 86, colour = 'red', size = 1.2) +
+  geom_text(aes(x = 44, label = '\nMCO Phase 1', y=300),
+            colour="blue", angle=90, hjust = 1.2, text=element_text(size=11)) +
+  geom_text(aes(x = 58, label = '\nMCO Phase 2', y= 315),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11)) +
+  geom_text(aes(x = 72, label = '\nMCO Phase 3', y=250),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11)) +
+  geom_text(aes(x = 86, label = '\nMCO Phase 4', y=250),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11)) 
+```
+
+```{r}
+p_SI <- plot(mys_parametric_si, "SI")  
+p_SI + theme_bw() 
+```
+
+- the 7-day sliding window estimates of instantaneous $R_e$
+
+```{r}
+p_Ri <- plot(mys_parametric_si, "R")
+p_Ri + theme_bw() + 
+  geom_vline(xintercept = 44, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 58, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 72, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 86, colour = 'red', size = 1.2) +
+  geom_text(aes(x = 44, label = '\nMCO Phase 1', y=20),
+            colour="blue", angle=90, hjust = 1.2, text=element_text(size=11)) +
+  geom_text(aes(x = 58, label = '\nMCO Phase 2', y= 20),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11)) +
+  geom_text(aes(x = 72, label = '\nMCO Phase 3', y=20),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11)) +
+  geom_text(aes(x = 86, label = '\nMCO Phase 4', y=20),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11)) +
+  ggtitle('the 7-day sliding window estimates of instantaneous Rt') +
+  scale_y_continuous(n.breaks = 10)
+```
+
+The $R_t$ is very high nearly day 50. Reasons:
+
+- One possible explanation is that COVID-19 is transmissible before the onset of symptoms, resulting in much shorter serial intervals than expected, possibly shorter than the incubation period
+- Alternatively, and very likely, there may be non-symptomatic, sub-clinical spreaders of the disease, who are undetected.
+- some cases transmitting the disease very soon after infection, possibly before the onset of symptoms (so-called super-spreaders), and some cases being sub-clinical, and thus undetected, spreading the disease as well, while other cases have a serial interval more consistent with that of MERS or SARS, with a mean around 8 days.
+
+### Calculate R with uncertainty
+
+incorporate this uncertainty around the serial interval distribution by allowing specification of a distribution of distributions of serial intervals. So let’s 
+
+- retain the mean SI estimated by Li et al of 7.5 days, with an SD of 3.4
+- but let’s also allow that mean SI to vary between 2.3 and 8.4 
+- Use a truncated normal distribution with an SD of 2.0.
+- We’ll also allow the SD or the SD to vary between 0.5 and 4.0.
+
+```{r}
+# mys_res_uncertain_si <- estimate_R(mys, method = "uncertain_si", 
+#                                   config = make_config(list(mean_si = 7.5, std_si = 3.4, 
+#                                                             std_mean_si = 2, 
+#                                                             min_mean_si = 2.3, max_mean_si = 8.4, 
+#                                                             std_std_si = 2, 
+#                                                             min_std_si = 0.5, max_std_si = 4, 
+#                                                             n1 = 1000, n2 = 1000)))
+
+# plot_Ri(mys_res_uncertain_si)
+```
+
+
+## Based on Du, Z., et al.
+
+The serial interval of COVID-19 from publicly reported confirmed cases. medRxiv, 2020
+
+mean = 3.96, SD = 4.75
+
+```{r}
+mys_parametric_si_du <- estimate_R(mys, 
+                                method = "parametric_si",
+                                config = make_config(list(mean_si = 3.96, 
+                                                          std_si = 4.75)))
+glimpse(mys_parametric_si_du)
+```
+### Plot
+
+- plots the incidence
+- plots the serial interval distribution
+- plot of R
+
+```{r}
+p_I_du <- plot(mys_parametric_si_du, "incid") 
+p_I_du + theme_bw() + 
+  geom_vline(xintercept = 44, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 58, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 72, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 86, colour = 'red', size = 1.2) +
+  geom_text(aes(x = 44, label = '\nMCO Phase 1', y=300),
+            colour="blue", angle=90, hjust = 1.2, text=element_text(size=11)) +
+  geom_text(aes(x = 58, label = '\nMCO Phase 2', y= 315),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11)) +
+  geom_text(aes(x = 72, label = '\nMCO Phase 3', y=250),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11)) +
+  geom_text(aes(x = 86, label = '\nMCO Phase 4', y=250),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11)) +
+  scale_y_continuous(n.breaks = 10)
+```
+
+```{r}
+p_SI_du <- plot(mys_parametric_si_du, "SI")  
+p_SI_du + theme_bw()
+```
+
+- the 7-day sliding window estimates of instantaneous $R_e$
+
+```{r}
+p_Ri_du <- plot(mys_parametric_si_du, "R")
+p_Ri_du + theme_bw() + 
+  geom_vline(xintercept = 44, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 58, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 72, colour = 'red', size = 1.2) +
+  geom_vline(xintercept = 86, colour = 'red', size = 1.2) +
+  geom_text(aes(x = 44, label = '\nMCO Phase 1', y=20),
+            colour="blue", angle=90, hjust = 1.2, text=element_text(size=11)) +
+  geom_text(aes(x = 58, label = '\nMCO Phase 2', y= 20),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11)) +
+  geom_text(aes(x = 72, label = '\nMCO Phase 3', y=20),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11)) +
+  geom_text(aes(x = 86, label = '\nMCO Phase 4', y=20),
+            colour="blue", angle=90, hjust = 1, text=element_text(size=11)) +
+  ggtitle('the 7-day sliding window estimates of instantaneous Rt')+
+  scale_y_continuous(n.breaks = 10, limits = c(0,8))
+```
+
+
+
+# Analysis from data world
+
+## Wuhan SI
+
+mean SI = 7.5, SD SI = 3.4 
+
+```{r}
+mys_dw <- mys_dw %>% select(Time, I)
+mys_dw_parametric_si <- estimate_R(mys_dw, 
+                                method = "parametric_si",
+                                config = make_config(list(mean_si = 7.5, 
+                                                          std_si = 3.4)))
+glimpse(mys_dw_parametric_si)
+```
+
+### Plot
+
+- plots the incidence
+- plots the serial interval distribution
+- plot of R
+
+```{r}
+p_I_dw <- plot(mys_dw_parametric_si, "incid") 
+p_I_dw + theme_bw()
+```
+
+
+```{r}
+p_SI_dw <- plot(mys_dw_parametric_si, "SI")  
+p_SI_dw + theme_bw()
+```
+
+- the 7-day sliding window estimates of instantaneous $R_e$
+
+```{r}
+p_Ri_dw <- plot(mys_dw_parametric_si, "R")
+p_Ri_dw + theme_bw()
+```
+
+
+## Based on Du et al
+
+### Du et al SI
+
+mean SI = 7.5, SD SI = 3.4 
+
+```{r}
+mys_dw <- mys_dw %>% select(Time, I)
+mys_dw_parametric_si_du <- estimate_R(mys_dw, 
+                                method = "parametric_si",
+                                config = make_config(list(mean_si = 3.96, 
+                                                          std_si = 4.75)))
+glimpse(mys_dw_parametric_si_du)
+```
+
+### Plot
+
+- plots the incidence
+- plots the serial interval distribution
+- plot of R
+
+```{r}
+p_I_dw_du <- plot(mys_dw_parametric_si_du, "incid") 
+p_I_dw_du + theme_bw()
+```
+
+
+```{r}
+p_SI_dw_du <- plot(mys_dw_parametric_si_du, "SI")  
+p_SI_dw_du + theme_bw()
+```
+
+- the 7-day sliding window estimates of instantaneous $R_e$
+
+```{r}
+p_Ri_dw_du <- plot(mys_dw_parametric_si_du, "R")
+p_Ri_dw_du + theme_bw()
+```
+# Values of R at MCO 1, 2 and 3
+
+- First case local Malaysia on Feb 4 (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7293423/)
+- MCO 1 on 18 March - 31 March
+- MCO 2 on 1 April - 14 April
+- MCO 3 on 15 April - 28 April
+- MCO 4 on 29 April - 12 May
+
+Calculate difference in days
+
+```{r}
+first_mco1 <- interval(as_date('2020-02-04'), as_date('2020-03-17'))
+first_mco1 <- first_mco1 / ddays(1)
+
+mco1_mco2 <- interval(as_date('2020-03-17'), as_date('2020-03-31'))
+mco1_mco2 <- mco1_mco2 / ddays(1)
+
+mco2_mco3 <- interval(as_date('2020-03-31'), as_date('2020-04-14'))
+mco2_mco3 <- mco2_mco3 / ddays(1)
+
+mco3_mco4 <- interval(as_date('2020-04-14'), as_date('2020-04-28'))
+mco3_mco4 <- mco3_mco4 / ddays(1)
+
+mco4_mco5 <- interval(as_date('2020-04-28'), as_date('2020-05-12'))
+mco4_mco5 <- mco4_mco5 / ddays(1)
+
+first_mco1 ; mco1_mco2 ; mco2_mco3 ; mco3_mco4 ; mco4_mco5
+```
+
+In the table \@ref(tab:si), we see the estimated R value from the first day until . 
+
+```{r si}
+mys_dw_parametric_si$R
+```
+
+
+In the table \@ref(tab:mco), we show for each MCO phase, the difference in the mean R value and the percentage of difference in means between
+
+1. day 10 and day 5
+2. day 5 and day 1 . 
+
+```{r mco}
+MCO <- mys_dw_parametric_si$R %>% 
+  filter(t_start %in% c(2, 7, 12, 55, 60, 65, 68, 73, 78, 80, 85, 88))
+MCO
+MCO_type <- c(rep('MCO1',3), 
+              rep('MCO2',3),
+              rep('MCO3',3),
+              rep('MCO4',3)) 
+data_mco <- data.frame(day =  c('D1', 'D5' , 'D10'), MCO_type)
+data_mco <- bind_cols(data_mco, MCO) %>% rename(meanR = "Mean(R)")
+data_mco
+```
+
+
+Calculate the difference
+
+```{r}
+data_mco_R <- data_mco %>%
+    group_by(MCO_type) %>%
+    mutate(mean_diff = meanR - lag(meanR),
+           mean_diff_percent = (mean_diff / (meanR - mean_diff))*100,
+           day = as_factor(day)) %>% 
+  select(day, MCO_type, meanR, mean_diff, mean_diff_percent, t_start, t_end, 
+         quantile25 = `Quantile.0.025(R)`, quantile975 = `Quantile.0.975(R)`)
+data_mco_R
+```
+
+plot
+
+```{r}
+data_mco_R %>% ggplot(aes(x = day, y = meanR, group = MCO_type)) + 
+  geom_errorbar(aes(ymin = quantile975, ymax = quantile25), width = .25) +
+  geom_line() +
+  geom_point() +
+  facet_wrap(. ~ MCO_type, ncol = 2, scales = 'free_y') +
+  ylab('mean reproduction number and quantiles') +
+  ggtitle('The reproduction number at day 1 (D1), day 5 (D5) and day 10 (D10) \nand the 25% quantiles to 95% quantiles intervals')
+```
+
+
+```{r}
+data_mco_R %>% ggplot(aes(x = day, y = meanR, group = MCO_type)) + 
+  geom_errorbar(aes(ymin = quantile975, ymax = quantile25), width = .25) +
+  geom_line() +
+  geom_point() +
+  facet_grid(. ~ MCO_type) +
+  ylab('mean reproduction number and quantiles') +
+  ggtitle('The reproduction number at day 1 (D1), day 5 (D5) and day 10 (D10) \nand the 25% quantiles to 95% quantiles intervals')
+```
+
+```{r}
+sessionInfo()
+```
+
