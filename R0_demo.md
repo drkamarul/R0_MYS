@@ -49,18 +49,6 @@ library(tidyverse)
 ```
 
 ```
-## Warning: package 'tibble' was built under R version 4.0.3
-```
-
-```
-## Warning: package 'tidyr' was built under R version 4.0.3
-```
-
-```
-## Warning: package 'readr' was built under R version 4.0.3
-```
-
-```
 ## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
 ## x dplyr::filter() masks stats::filter()
 ## x dplyr::lag()    masks stats::lag()
@@ -76,13 +64,6 @@ http://www.repidemicsconsortium.org/earlyR/
 
 ```r
 library(earlyR)
-```
-
-```
-## Warning: package 'earlyR' was built under R version 4.0.3
-```
-
-```r
 library(incidence)
 ```
 
@@ -177,10 +158,6 @@ library(R0)
 
 ```
 ## Loading required package: MASS
-```
-
-```
-## Warning: package 'MASS' was built under R version 4.0.3
 ```
 
 ```
